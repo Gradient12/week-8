@@ -9,6 +9,8 @@ var userRectangle;
 var userRectangle_GeoJSON;
 var markerGroup;
 var parsedData;
+// var selectedMarkers;
+var currentId;
 
 var drawControl = new L.Control.Draw({
   draw: {
@@ -71,11 +73,15 @@ var blueIcon = L.icon({
 });
 
 function drawOrangeIcon(feature,latlng){
-    return L.marker(latlng, {icon: orangeIcon});
+    var m = L.marker(latlng, {icon: orangeIcon});
+    // selectedMarkers.push(m);
+    return m;
 }
 
 function drawRedIcon(feature,latlng){
-    return L.marker(latlng, {icon: redIcon});
+    var m = L.marker(latlng, {icon: redIcon});
+    // selectedMarkers.push(m); 
+    return m;
 }
 
 function drawBlueIcon(feature,latlng){
@@ -91,25 +97,71 @@ function drawBlueOrRedIcon(feature,latlng){
     }
 }
 
+function drawBlueRedOrangeIcon(feature,latlng){
+    if(typeof userRectangle_GeoJSON !=='undefined' && turf.inside(feature, userRectangle_GeoJSON)){
+        var id = feature.id;
+        if(id == currentId){
+            return drawOrangeIcon(feature,latlng);
+        }
+        else{
+            return drawRedIcon(feature,latlng);
+        }
+    }
+    else {
+        return drawBlueIcon(feature,latlng);
+    }
+}
+
 function showSelectedItemOnSidebar(feature, layer){
     if(typeof userRectangle_GeoJSON !=='undefined' && turf.inside(feature, userRectangle_GeoJSON)){
         console.log(feature);
-        var artId = feature.properties.ArtID;
+        // var artId = feature.properties.ArtID;
+        var id = feature.id;
         var artTitle = feature.properties.Title;
-        var name = feature.properties.First_Name + feature.properties.Last_Name;
+        var name = feature.properties.First_Name + " " + feature.properties.Last_Name;
         // add a div to the sidebar
         $('#shapes').append(
-            '<div class="datum" id="'+artId+'" onmouseover = "mouseoverHandler(this)">'+
+            '<div class="datum" id="'+id+'" onmouseover = "mouseoverHandler(this)" onmouseout = "mouseoutHandler(this)">'+
             '<h1>' + name + '</h1>'+
             '<h2>' + artTitle + '</h2>'+
             '</div>');
-
     }
 }
 
 function mouseoverHandler(e){
-    console.log('mouseover');
-    console.log(e.id);
+    currentId = e.id;
+
+    // Redraw all the markers
+    map.removeLayer(markerGroup);
+    markerGroup = L.geoJson(parsedData, {
+        pointToLayer: drawBlueRedOrangeIcon,
+    });
+    markerGroup.addTo(map);
+
+    // ?????? able to redraw the marker but the new marker does not have 'feature'
+    // _.each(selectedMarkers,function(m){
+    //     if(e.id == m.feature.id){
+    //         m.setStyle();
+    //         map.removeLayer(m);
+    //         console.log("m.feature: "+m.feature);
+    //         // remove the marker from selectedMarkers
+    //         var index = selectedMarkers.indexOf(m);
+    //         selectedMarkers.splice(index,1);
+    //
+    //         var latlng = [m.feature.geometry.coordinates[1],m.feature.geometry.coordinates[0]];
+    //         drawOrangeIcon(m.feature,latlng).addTo(map);
+    //     }
+    //     else{
+    //     }
+    // });
+}
+
+function mouseoutHandler(e){
+    map.removeLayer(markerGroup);
+    markerGroup = L.geoJson(parsedData, {
+        pointToLayer: drawBlueOrRedIcon,
+    });
+    markerGroup.addTo(map);
 }
 
 map.on('draw:created', function (e) {
@@ -127,16 +179,18 @@ map.on('draw:created', function (e) {
     userRectangle_GeoJSON = userRectangle.toGeoJSON();
     // console.log(userRectangle_GeoJSON);
 
-    // clear current markers
-    map.removeLayer(markerGroup);
     clearSidebar();
 
+    // selectedMarkers = [];
+
     // Redraw all the markers
+    map.removeLayer(markerGroup);
     markerGroup = L.geoJson(parsedData, {
         pointToLayer: drawBlueOrRedIcon,
         onEachFeature: showSelectedItemOnSidebar
     });
     markerGroup.addTo(map);
+
 });
 
 function clearSidebar(){
