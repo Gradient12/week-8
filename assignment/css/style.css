@@ -1,7 +1,25 @@
-.slideButton{
-    width: 100%;
-    height: 30px;
-    margin-bottom: 10px;
+
+.datum{
+    margin: 3px;
+    background-color: rgb(241, 241, 241);
+    padding: 5px;
+}
+
+.datum:hover{
+    background-color: rgb(255, 189, 75);
+}
+
+h1 {
+    color: rgb(89, 89, 89);
+    font-size: 14px;
+    margin: auto;
+}
+
+h2 {
+    color: rgb(207, 42, 42);
+    font-size: 18px;
+    font-weight: normal;
+    margin: auto;
 }
 
 body {
@@ -28,16 +46,8 @@ body {
     padding: 20px;
 }
 
-h1 {
-    margin-bottom: 10px;
-}
 
-h2 {
-    font-weight: normal;
-    color: #666;
-    margin-top: 10px,
-}
-
+/*
 .street-selected path {
   -webkit-animation: active 5s ease-out;
   -webkit-animation-iteration-count: infinite;
@@ -47,4 +57,4 @@ h2 {
     0% {opacity: 1;}
     50% {opacity: 1; stroke-width: 10;}
     100% {opacity: 1;}
-}
+}*/

@@ -77,7 +77,7 @@ $.ajax('https://raw.githubusercontent.com/CPLN690-MUSA610/datasets/master/geojso
       .filter(function(zip) { return zip[0]; })
       .map(function(zip) { return zip[1]; })
       .value();
-
+      console.log("crimeFilters" +crimeFilters);
     // Carry out filter
     var filteredCrimeData = _.clone(crimeData); // Cloning here so we don't overwrite data on the original object
     filteredCrimeData.features = _.filter(filteredCrimeData.features, function(f) {
@@ -100,4 +100,3 @@ $.ajax('https://raw.githubusercontent.com/CPLN690-MUSA610/datasets/master/geojso
     }).addTo(map);
   });
 });
-

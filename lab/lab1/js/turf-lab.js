@@ -96,3 +96,118 @@ flying from [-87.4072265625, 38.376115424036016] and that its last known coordin
 was [-87.5830078125, 38.23818011979866]. Given this information, see if you can
 determine where we can expect this flock of birds to rest.
 ===================== */
+
+
+// Use buttons to show the result of each exercise
+var markers = [];
+$( "#btn-ex1" ).click(function() {
+    clearAllMarkers();
+    showEx1();
+});
+
+$( "#btn-ex2" ).click(function() {
+    clearAllMarkers();
+    showEx2();
+});
+
+$( "#btn-ex3" ).click(function() {
+    clearAllMarkers();
+    showEx3();
+});
+
+function clearAllMarkers(){
+    _.each(markers,function(m){
+        map.removeLayer(m);
+    });
+    markers = [];
+}
+
+function fitBounds(){
+    var group = new L.featureGroup(markers);
+    var fitBoundsOptions = { padding: [50, 50] };
+    map.fitBounds(group.getBounds(), fitBoundsOptions);
+}
+
+// Ex1
+function showEx1(){
+    // add the center point marker
+    var singlePt = ex1SinglePoint.features[0];
+    var latlng1 = [singlePt.geometry.coordinates[1],singlePt.geometry.coordinates[0]];
+    var option1 = {color:'#ba3737'};
+    var circleMarker1 = L.circleMarker(latlng1,option1).addTo(map);
+    markers.push(circleMarker1);
+
+    // add circle markers for all other points
+    _.each(ex1Points.features,function(feature){
+        var latlng2 = [feature.geometry.coordinates[1],feature.geometry.coordinates[0]];
+        var option2 = {color:'#464646'};
+        var circleMarker2 = L.circleMarker(latlng2,option2).addTo(map);
+        markers.push(circleMarker2);
+    });
+
+    // place a marker on the nearest point
+    var nearest = turf.nearest(singlePt, ex1Points);
+    markers.push(L.geoJson(nearest).addTo(map));
+
+    fitBounds();
+}
+
+
+// Ex2
+function showEx2(){
+    var ex2Markers = L.geoJson(ex2Points,{
+        onEachFeature: function(feature,layer){
+            layer.bindPopup("Property age: " + feature.properties.ageOfProperty);
+        }
+    }).addTo(map);
+    markers = markers.concat(ex2Markers);
+
+    var avg = turf.average(ex2Polygons,ex2Points,'ageOfProperty','avgAge');
+
+    var ex2PolyMarkers = L.geoJson(avg,{
+        style: function(feature) {
+          return {
+            stroke: false,
+            fillColor: '#4d4d4d',
+            fillOpacity: (feature.properties.avgAge * 0.005)
+          };
+        },
+        onEachFeature: function(feature, layer) {
+          layer.bindPopup("avgAge " + feature.properties.avgAge);
+          console.log(feature.properties.avgAge);
+        }
+    }).addTo(map);
+    markers = markers.concat(ex2PolyMarkers);
+    fitBounds();
+}
+
+// Ex3
+function showEx3(){
+    var ex3PolyMarkers = L.geoJson(ex3Polygons,{
+        style: function(feature){
+            return{
+                "color": feature.properties.stroke,
+                "weight": 1,
+                "fillColor":feature.properties.fill,
+                "fillOpacity": 0.05
+            };
+        }
+    }).addTo(map);
+    markers = markers.concat(ex3PolyMarkers);
+
+    var tagged = turf.tag(ex3Points, ex3Polygons,
+                          'fill', 'marker-color');
+
+    // add circle markers
+    _.each(tagged.features,function(feature){
+        var latlng = [feature.geometry.coordinates[1],feature.geometry.coordinates[0]];
+        var circleMarkerOptions = {
+            fillColor:feature.properties['marker-color'],
+            color:'#464646'
+        };
+        // console.log(feature);
+        var circleMarker = L.circleMarker(latlng,circleMarkerOptions).addTo(map);
+        markers.push(circleMarker);
+    });
+      fitBounds();
+}

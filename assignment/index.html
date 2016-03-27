@@ -4,14 +4,13 @@
     <!-- CSS Imports -->
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <!-- Sidebar -->
     <div class="sidebar">
-        <button type="button" class="slideButton" id="btn-ex1">Exercise 1</button>
-        <button type="button" class="slideButton" id="btn-ex2">Exercise 2</button>
-        <button type="button" class="slideButton" id="btn-ex3">Exercise 3</button>
+        <div id="shapes"></div>
     </div>
     <!-- Map -->
     <div id="map" class="map"></div>
@@ -19,11 +18,9 @@
     <script src="js/jquery-2.2.0.js"></script>
     <script src="js/underscore.js"></script>
     <script src="js/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
     <script src="https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v2.0.0/turf.min.js"></script>
     <script src="js/setup.js"></script>
-    <script src="js/ex1Data.js"></script>
-    <script src="js/ex2Data.js"></script>
-    <script src="js/ex3Data.js"></script>
-    <script src="js/turf-lab.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>
